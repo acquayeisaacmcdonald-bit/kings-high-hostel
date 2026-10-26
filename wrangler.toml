@@ -1,0 +1,8 @@
+name = "kings-high-hostel"
+compatibility_date = "2024-10-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kings-high-db"
+database_id = "afc0bac0-e8d9-4611-8054-3c35e966468a"
