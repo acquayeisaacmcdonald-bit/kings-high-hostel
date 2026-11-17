@@ -1,0 +1,14 @@
+INSERT INTO students (unique_code, full_name, form, course, parent_name, parent_phone) VALUES
+('KHH-F3-001', 'ASIEDU PRINCE', 3, 'AUTO MECHANIC', 'Kojo ASIEDU', '0241151862'),
+('KHH-F3-002', 'KINGSLEY OFORI', 3, 'AUTO MECHANIC', 'MABEL OFORI', '0542638954'),
+('KHH-F3-003', 'ABUBAKAR OSMAN', 3, 'ELECTRICALS ENGINEERING', 'SULEMAN OSMAN', '0541430236'),
+('KHH-F3-004', 'RAYMOND BOTCHWEY', 3, 'AUTO MECHANIC', 'John BOTCHWEY', '0240585006'),
+('KHH-F3-005', 'KINGSLEY BOTCHWEY', 3, 'Building construction Technology', 'John BOTCHWEY', '0240585006'),
+('KHH-F3-006', 'RANSFORD BAAH', 3, 'ELECTRICALS ENGINEERING', 'PETER BAAH', '0558777307'),
+('KHH-F3-007', 'EVANS AVORNU', 3, 'AUTO MECHANIC', 'STEPHEN AVORNU', '0246323914'),
+('KHH-F3-008', 'DOMELA MATTHEW', 3, 'Building and construction Technology', 'ISHATU BASHIRU', '0546404292'),
+('KHH-F3-009', 'AYATEY SHADRACH', 3, 'Building and construction Technology', 'AYATEY', '0557852229'),
+('KHH-F3-010', 'MESHARK OTABIL', 3, 'ELECTRICALS ENGINEERING', 'ISAAC OTABIL', '0259185978'),
+('KHH-F3-011', 'EBENEZER BOFAH', 3, 'AUTO MECHANIC', 'ISAAC YAW BOFAH', '0545750005'),
+('KHH-F3-012', 'Bright Appiah', 3, 'Building and construction Technology', 'Magrete Yamboah', '0559385039'),
+('KHH-F3-013', 'Ekpo Jerry', 3, 'Auto mechanic', 'Lewu lebene', '0531409425');
