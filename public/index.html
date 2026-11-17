@@ -7,7 +7,7 @@
   <style>
     :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --card: #fff; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; display: none; } /* Hidden by default */
+    .container { max-width: 1200px; margin: 0 auto; display: none; } 
     #loginScreen { max-width: 400px; margin: 80px auto; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block; }
     h1, h2 { color: var(--primary); }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
@@ -23,38 +23,32 @@
     table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
     th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; }
     th { background: #f1f5f9; }
-    .reconcile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    .reconcile-box { background: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid var(--primary); }
     #msg { display: none; padding: 10px; margin-bottom: 15px; border-radius: 4px; background: #dcfce7; color: #166534; font-weight: bold; }
     #msg.error { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
-  <h1 style="text-align:center; color:#2563eb;">🏨 Kings High Hostel</h1>
-  <p style="text-align:center; color:#64748b;">Please log in to continue</p>
-  <form id="loginForm">
-    <label>Username</label>
-    <input type="text" id="loginUser" required>
-    <label>Password</label>
-    <input type="password" id="loginPass" required>
-    <button type="submit" id="loginBtn">Log In</button>
-    <div id="loginError" style="color:#ef4444; font-size:0.9rem; display:none; margin-top:10px; font-weight:bold; text-align:center;"></div>
-  </form>
+  <h1 style="text-align:center;">🏨 Kings High Hostel</h1>
+  <p style="text-align:center; color:#64748b;">Enter Admin PIN (Default: 1234)</p>
+  <input type="password" id="loginPin" placeholder="Enter PIN" style="text-align:center; font-size:1.2rem;">
+  <button onclick="unlockSystem()">Unlock</button>
+  <div id="loginError" style="color:#ef4444; text-align:center; margin-top:10px; display:none; font-weight:bold;"></div>
 </div>
 
-<!-- MAIN APP (Hidden until login) -->
-<div class="container" id="mainApp" style="display: none;">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <h1 id="headerTitle">🏨 Kings High Hostel</h1>
-    <button onclick="logout()" style="width:auto; background:#64748b; margin:0;">Logout</button>
-  </div>
+<div class="container" id="mainApp">
+  <h1 id="headerTitle">🏨 Kings High Hostel</h1>
   <div id="msg"></div>
 
   <div class="card" style="border-left: 5px solid var(--primary);">
-    <h2>🔍 Quick Fee Check</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2>🔍 Quick Fee Check</h2>
+      <div>
+        <button class="small" onclick="window.open('/api/export', '_blank')" style="background:#059669;">📥 Download CSV</button>
+        <button class="small" onclick="copyParents()" style="background:#25D366;">📱 Copy Parents</button>
+      </div>
+    </div>
     <input type="text" id="searchBox" placeholder="Type Student Name or ID..." oninput="searchStudent()">
     <div id="searchResult" style="margin-top: 15px; display: none;"></div>
   </div>
@@ -67,10 +61,10 @@
 
   <div class="card" style="border: 2px solid var(--success);">
     <h2>📊 Sunday Reconciliation Report</h2>
-    <div class="reconcile-grid">
-      <div class="reconcile-box"><h4>Form 1 Collected</h4><div class="money" id="rc-f1">GHC 0</div></div>
-      <div class="reconcile-box"><h4>Form 2 Collected</h4><div class="money" id="rc-f2">GHC 0</div></div>
-      <div class="reconcile-box"><h4>Form 3 Collected</h4><div class="money" id="rc-f3">GHC 0</div></div>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="card" style="margin:0; border-left: 4px solid var(--primary);"><h4>Form 1 Collected</h4><div class="stat" id="rc-f1">GHC 0</div></div>
+      <div class="card" style="margin:0; border-left: 4px solid var(--primary);"><h4>Form 2 Collected</h4><div class="stat" id="rc-f2">GHC 0</div></div>
+      <div class="card" style="margin:0; border-left: 4px solid var(--primary);"><h4>Form 3 Collected</h4><div class="stat" id="rc-f3">GHC 0</div></div>
     </div>
   </div>
 
@@ -104,7 +98,7 @@
     </div>
   </div>
 
-  <div class="card" id="adminCard" style="border: 2px solid #8b5cf6; display: none;">
+  <div class="card" id="adminCard" style="border: 2px solid #8b5cf6;">
     <h2>⚙️ System Setup (Admin Only)</h2>
     <div style="display:flex; gap:10px; align-items:flex-end;">
       <div style="flex:2;"><label>Hostel Name</label><input type="text" id="set-name"></div>
@@ -115,9 +109,25 @@
 
   <div class="card">
     <h2>Student Directory</h2>
+    <div style="display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap;">
+      <div><strong>Form:</strong>
+        <button class="small" onclick="setFormFilter(0)">All</button>
+        <button class="small" onclick="setFormFilter(1)">F1</button>
+        <button class="small" onclick="setFormFilter(2)">F2</button>
+        <button class="small" onclick="setFormFilter(3)">F3</button>
+      </div>
+      <div><strong>Status:</strong>
+        <button class="small" onclick="setPayFilter('all')">All</button>
+        <button class="small" onclick="setPayFilter('full')">Full</button>
+        <button class="small" onclick="setPayFilter('part')">Part</button>
+        <button class="small" onclick="setPayFilter('unpaid')">Unpaid</button>
+      </div>
+    </div>
     <table>
-      <thead><tr><th>Code</th><th>Name</th><th>Room</th><th>Status</th><th>Parent</th><th>Action</th></tr></thead>
-      <tbody id="studentList"></tbody>
+      <thead>
+        <tr><th>Code</th><th>Name & Course</th><th>Form</th><th>Room / Bed</th><th>Fees Status</th><th>Parent / Contact</th><th>Action</th></tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
     </table>
   </div>
 </div>
@@ -125,74 +135,25 @@
 <script>
 const API = '';
 let allStudents = [];
+let formFilter = 0;
+let payFilter = 'all';
 
-function showMsg(text, isError = false) {
-  const msg = document.getElementById('msg');
-  msg.textContent = text;
-  msg.className = isError ? 'error' : '';
-  msg.style.display = 'block';
-  setTimeout(() => { msg.style.display = 'none'; }, 5000);
-}
-
-// LOGIN LOGIC
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const errEl = document.getElementById('loginError');
-  btn.textContent = 'Logging in...';
-  errEl.style.display = 'none';
-
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: document.getElementById('loginUser').value,
-        password: document.getElementById('loginPass').value
-      })
-    });
-    
-    const data = await res.json();
-    if (res.ok) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      initApp();
-    } else {
-      errEl.textContent = data.error || 'Login failed';
-      errEl.style.display = 'block';
-    }
-  } catch (err) {
-    errEl.textContent = 'Network error: ' + err.message;
-    errEl.style.display = 'block';
+function unlockSystem() {
+  const pin = document.getElementById("loginPin").value;
+  const err = document.getElementById("loginError");
+  if (pin === "1234") {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+    loadDashboard(); loadStudents(); loadReconcile(); loadSettings(); loadBeds();
+  } else {
+    err.textContent = "Incorrect PIN";
+    err.style.display = "block";
   }
-  btn.textContent = 'Log In';
-});
-
-async function logout() {
-  await fetch('/api/auth/logout', { method: 'POST' });
-  location.reload();
 }
-
-// APP LOGIC
-async function initApp() {
-  loadDashboard(); loadStudents(); loadBeds(); loadReconcile(); loadSettings();
-}
-
-async function loadSettings() {
-  const res = await fetch('/api/settings');
-  if (!res.ok) return;
-  const data = await res.json();
-  document.getElementById('headerTitle').textContent = '🏨 ' + data.hostel_name;
-  document.getElementById('set-name').value = data.hostel_name;
-  document.getElementById('trial-date').textContent = data.trial_ends_at;
-  
-  // Try showing admin card (will fail silently if user is not CEO, which is fine)
-  document.getElementById('adminCard').style.display = 'block';
-}
+document.getElementById("loginPin").addEventListener("keypress", (e) => { if(e.key === "Enter") unlockSystem(); });
 
 async function loadDashboard() {
-  const res = await fetch('/api/dashboard');
-  const data = await res.json();
+  const res = await fetch('/api/dashboard'); const data = await res.json();
   if (data.error) return;
   document.getElementById('stat-total').textContent = data.students.total;
   document.getElementById('stat-collected').textContent = 'GHC ' + data.finance.totalCollected;
@@ -200,8 +161,7 @@ async function loadDashboard() {
 }
 
 async function loadReconcile() {
-  const res = await fetch('/api/reconcile');
-  const data = await res.json();
+  const res = await fetch('/api/reconcile'); const data = await res.json();
   if (data.error) return;
   document.getElementById('rc-f1').textContent = 'GHC 0';
   document.getElementById('rc-f2').textContent = 'GHC 0';
@@ -212,10 +172,17 @@ async function loadReconcile() {
   });
 }
 
-async function loadStudents() {
-  const res = await fetch('/api/students');
+async function loadSettings() {
+  const res = await fetch('/api/settings'); if (!res.ok) return;
   const data = await res.json();
-  if (data.error) return;
+  document.getElementById('headerTitle').textContent = '🏨 ' + data.hostel_name;
+  document.getElementById('set-name').value = data.hostel_name;
+  document.getElementById('trial-date').textContent = data.trial_ends_at;
+}
+
+async function loadStudents() {
+  const res = await fetch('/api/students'); const data = await res.json();
+  if (data.error) { alert("Error: " + data.error); return; }
   allStudents = data.students;
   
   const pSelect = document.getElementById('p-id');
@@ -223,37 +190,49 @@ async function loadStudents() {
   pSelect.innerHTML = '<option value="">Select Student...</option>';
   aSelect.innerHTML = '<option value="">Select Unallocated...</option>';
   
-  const tbody = document.getElementById('studentList');
-  tbody.innerHTML = '';
-  
   allStudents.forEach(s => {
     if (!s.allocation_id) aSelect.innerHTML += `<option value="${s.id}">${s.full_name}</option>`;
-    pSelect.innerHTML += `<option value="${s.id}" data-balance="${s.balance}">${s.full_name} (Owes: ${s.balance})</option>`;
-    
-    let badge = '';
-    if (s.pay_status === 'full') badge = `<span style="color:var(--success); font-weight:bold;">FULL</span>`;
-    if (s.pay_status === 'part') badge = `<span style="color:var(--warning); font-weight:bold;">OWES ${s.balance}</span>`;
-    if (s.pay_status === 'unpaid') badge = `<span style="color:var(--danger); font-weight:bold;">UNPAID</span>`;
-
-    tbody.innerHTML += `<tr>
-      <td><strong>${s.unique_code}</strong></td>
-      <td>${s.full_name}</td>
-      <td>${s.room_name ? s.room_name + ' / ' + s.bed_label : '-'}</td>
-      <td>${badge}</td>
-      <td>${s.parent_name || '-'}</td>
-      <td>${s.allocation_id ? `<button class="small danger" onclick="checkout(${s.allocation_id})">Check-Out</button>` : ''}</td>
-    </tr>`;
+    pSelect.innerHTML += `<option value="${s.id}">${s.full_name} (Owes: ${s.balance})</option>`;
   });
+  renderTable();
 }
 
 async function loadBeds() {
-  const res = await fetch('/api/beds');
-  const data = await res.json();
+  const res = await fetch('/api/beds'); const data = await res.json();
   if (data.error) return;
   const select = document.getElementById('a-bed');
   select.innerHTML = '<option value="">Select Bed...</option>';
   data.beds.forEach(b => {
     if (b.status === 'available') select.innerHTML += `<option value="${b.id}">${b.room_name} - ${b.bed_label}</option>`;
+  });
+}
+
+function setFormFilter(f) { formFilter = f; renderTable(); }
+function setPayFilter(p) { payFilter = p; renderTable(); }
+
+function renderTable() {
+  const tbody = document.getElementById('studentTableBody');
+  tbody.innerHTML = '';
+  allStudents.forEach(s => {
+    if (formFilter !== 0 && Number(s.form) !== formFilter) return;
+    if (payFilter !== 'all' && s.pay_status !== payFilter) return;
+
+    let badge = '';
+    if (s.pay_status === 'full') badge = `<span style="color:var(--success); font-weight:bold;">FULL</span>`;
+    if (s.pay_status === 'part') badge = `<span style="color:var(--warning); font-weight:bold;">PART (Owes ${s.balance})</span>`;
+    if (s.pay_status === 'unpaid') badge = `<span style="color:var(--danger); font-weight:bold;">UNPAID</span>`;
+
+    let wa = s.parent_phone ? `<br><small>${s.parent_phone}</small> <a href="https://wa.me/${s.parent_phone}" target="_blank"><button class="small wa">WA</button></a>` : '';
+
+    tbody.innerHTML += `<tr>
+      <td><strong>${s.unique_code}</strong></td>
+      <td>${s.full_name}<br><small>${s.course || ''}</small></td>
+      <td>F${s.form}</td>
+      <td>${s.room_name ? s.room_name + ' / ' + s.bed_label : '-'}</td>
+      <td>${badge}</td>
+      <td>${s.parent_name || '-'} ${wa}</td>
+      <td>${s.allocation_id ? `<button class="small danger" onclick="checkout(${s.allocation_id})">Check-Out</button>` : ''}</td>
+    </tr>`;
   });
 }
 
@@ -263,27 +242,57 @@ function searchStudent() {
   if (!q) { resBox.style.display = 'none'; return; }
   const matches = allStudents.filter(s => s.full_name.toLowerCase().includes(q) || s.unique_code.toLowerCase() === q);
   resBox.style.display = 'block';
-  resBox.innerHTML = matches.length ? matches.map(s => `<div><strong>${s.full_name}</strong> (${s.unique_code}) - Paid: GHC ${s.total_paid}, Owes: GHC ${s.balance}</div>`).join('') : 'No student found';
+  resBox.innerHTML = matches.length ? matches.map(s => `<div><strong>${s.full_name}</strong> (${s.unique_code}) - Owes: GHC ${s.balance}</div>`).join('') : 'No student found';
+}
+
+function copyParents() {
+  const phones = allStudents.filter(s => s.parent_phone).map(s => s.parent_phone).join(', ');
+  navigator.clipboard.writeText(phones);
+  alert('Copied parent phone numbers!');
 }
 
 async function saveSettings() {
   const name = document.getElementById('set-name').value;
   if (!name) return;
-  const res = await fetch('/api/settings', {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hostel_name: name })
-  });
-  if (res.ok) { showMsg('Settings saved!'); loadSettings(); }
-  else { showMsg('Save failed. Are you the CEO?', true); }
+  await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hostel_name: name }) });
+  loadSettings();
 }
 
 async function checkout(id) {
   if(!confirm('Check out this student?')) return;
   await fetch('/api/allocations/' + id + '/checkout', { method: 'POST' });
-  initApp();
+  loadDashboard(); loadStudents(); loadBeds(); loadReconcile();
 }
 
+document.getElementById('studentForm').onsubmit = async (e) => {
+  e.preventDefault();
+  await fetch('/api/students', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    full_name: document.getElementById('s-name').value,
+    form: document.getElementById('s-form').value,
+    course: document.getElementById('s-course').value,
+    parent_name: document.getElementById('s-pname').value,
+    parent_phone: document.getElementById('s-pphone').value
+  })});
+  e.target.reset(); loadDashboard(); loadStudents();
+};
 
+document.getElementById('paymentForm').onsubmit = async (e) => {
+  e.preventDefault();
+  await fetch('/api/payments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    student_id: document.getElementById('p-id').value,
+    amount: document.getElementById('p-amount').value
+  })});
+  e.target.reset(); loadDashboard(); loadStudents(); loadReconcile();
+};
+
+document.getElementById('allocateForm').onsubmit = async (e) => {
+  e.preventDefault();
+  await fetch('/api/allocations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    student_id: document.getElementById('a-sid').value,
+    bed_id: document.getElementById('a-bed').value
+  })});
+  e.target.reset(); loadDashboard(); loadStudents(); loadBeds();
+};
 </script>
 </body>
 </html>

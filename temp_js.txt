@@ -1,0 +1,35 @@
+async function loadReconcile() {
+  const res = await fetch('/api/reconcile');
+  const data = await res.json();
+  if (data.error) return;
+  document.getElementById('rc-f1').textContent = 'GHC 0';
+  document.getElementById('rc-f2').textContent = 'GHC 0';
+  document.getElementById('rc-f3').textContent = 'GHC 0';
+  data.collected.forEach(c => {
+    const el = document.getElementById('rc-f' + c.form);
+    if (el) el.textContent = 'GHC ' + Number(c.total_collected).toLocaleString();
+  });
+}
+
+async function loadSettings() {
+  const res = await fetch('/api/settings');
+  const data = await res.json();
+  document.getElementById('headerTitle').textContent = '🏨 ' + data.hostel_name;
+  document.getElementById('set-name').value = data.hostel_name;
+  document.getElementById('trial-date').textContent = data.trial_ends_at;
+  document.getElementById('adminCard').style.display = 'block';
+}
+
+async function saveSettings() {
+  const name = document.getElementById('set-name').value;
+  await fetch('/api/settings', {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hostel_name: name })
+  });
+  loadSettings();
+}
+
+function copyParents() {
+  const phones = allStudents.filter(s => s.parent_phone).map(s => s.parent_phone).join(', ');
+  navigator.clipboard.writeText(phones);
+}
